@@ -1,28 +1,30 @@
-// --- CẤU HÌNH GAME ---
+/// game.js - Final Fix for Mobile Touch
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const scoreElement = document.getElementById("scoreDisplay");
 const startBtn = document.getElementById("startBtn");
 const restartBtn = document.getElementById("restartBtn");
 const buttonsDiv = document.getElementById("buttons");
-let canResume = false;
 
 // Âm thanh
 const scoreSound = document.getElementById("eatSound");
 const bgMusic = document.getElementById("bgMusic");
 bgMusic.volume = 0.5;
 
+// Biến kiểm soát delay popup
+let canResume = false; 
+
 // Gắn sự kiện cho nút
 startBtn.addEventListener("click", startGame);
 restartBtn.addEventListener("click", restartGame);
 
-// Lời chúc cho Hân
+// Lời chúc
 const wishesForHan = [
-    "🎉Sinh nhật vui vẻ! Tuổi mới rực rỡ!",
-    "🎓 Ra trường điểm cao chót vót",
+    "🎉 Chúc Hân sinh nhật vui vẻ! Tuổi mới rực rỡ!",
+    "🎓 Ra trường điểm cao chót vót!",
     "💼 Job xịn lương cao, sếp quý đồng nghiệp thương!",
-    "💖 Có ny đẹp trai tâm lý, chiều chuộng!",
-    "🌟 Bình an, hạnh phúc và xinh đẹp!"
+    "💖 Sớm có người yêu đẹp trai, tâm lý, chiều chuộng!",
+    "🌟 An nhiên, hạnh phúc và xinh đẹp!"
 ];
 
 // Biến trạng thái game
@@ -45,8 +47,8 @@ const bird = {
         ctx.fillRect(this.x, this.y, this.width, this.height);
         ctx.strokeStyle = this.borderColor; ctx.lineWidth = 2;
         ctx.strokeRect(this.x, this.y, this.width, this.height);
-        ctx.fillStyle = "#fff"; ctx.fillRect(this.x + 16, this.y + 4, 6, 6); // Mắt
-        ctx.fillStyle = "#d84315"; ctx.fillRect(this.x + 22, this.y + 12, 6, 4); // Mỏ
+        ctx.fillStyle = "#fff"; ctx.fillRect(this.x + 16, this.y + 4, 6, 6);
+        ctx.fillStyle = "#d84315"; ctx.fillRect(this.x + 22, this.y + 12, 6, 4);
     },
     update: function() {
         this.velocity += this.gravity;
@@ -94,35 +96,38 @@ class Pipe {
     }
 }
 
-// --- ĐIỀU KHIỂN ---
+// --- XỬ LÝ SỰ KIỆN (QUAN TRỌNG ĐÃ SỬA) ---
 function handleInput(e) {
+    // 1. Nếu là phím, chỉ nhận phím Space
     if (e.type === 'keydown' && e.code !== 'Space') return;
-    if (e.target.tagName === 'BUTTON') return;
     
-    e.preventDefault();
+    // 2. Nếu click vào các nút điều khiển (Start, Nhạc...) thì bỏ qua
+    // Để tránh việc bấm nút Start mà chim lại nhảy
+    if (e.target.tagName === 'BUTTON') return;
 
-    // LOGIC MỚI: Xử lý khi đang hiện lời chúc
+    // Chặn hành vi mặc định (cuộn trang, zoom)
+    if (e.type !== 'keydown') {
+        // Chỉ preventDefault nếu chạm vào vùng game/popup, không chặn nút bấm
+        if (!e.target.closest('button')) {
+             e.preventDefault(); 
+        }
+    } else {
+        e.preventDefault(); // Chặn phím Space cuộn trang
+    }
+
+    // 3. LOGIC POPUP: Kiểm tra xem có được phép tắt popup chưa
     if (isPausedForWish) {
-        // Nếu biến canResume là true (tức là đã hết thời gian chờ) -> Cho phép tiếp tục
         if (canResume) {
             resumeGameFromWish();
         }
-        // Nếu canResume là false -> Lờ đi, không làm gì cả (để chống spam phím)
-        return;
+        return; // Nếu chưa hết thời gian chờ (canResume = false) thì không làm gì cả
     }
 
-    // Logic game bình thường
+    // 4. Logic bay bình thường
     if (isGameRunning) {
         bird.jump();
     }
 }
-
-// Sự kiện phím
-document.addEventListener("keydown", handleInput);
-// Sự kiện click/touch CHỈ ÁP DỤNG TRÊN CANVAS để tránh click nhầm bên ngoài
-canvas.addEventListener("mousedown", handleInput);
-canvas.addEventListener("touchstart", handleInput, {passive: false});
-
 
 // --- LOGIC GAME ---
 function init() {
@@ -160,7 +165,6 @@ function animate() {
         if (pipes[i].x + pipeWidth < 0) { pipes.splice(i, 1); i--; }
     }
     bird.update(); bird.draw();
-    // Vẽ đất
     ctx.fillStyle = "#795548"; ctx.fillRect(0, canvas.height - 10, canvas.width, 10);
     ctx.fillStyle = "#4caf50"; ctx.fillRect(0, canvas.height - 15, canvas.width, 5);
 
@@ -208,14 +212,14 @@ function pauseForWish(index) {
     document.getElementById("wishPopupText").textContent = wishesForHan[index];
     
     // Ẩn dòng hướng dẫn lúc đầu
-    instruction.style.opacity = "0";
+    if(instruction) instruction.style.opacity = "0";
     popup.style.display = "flex";
     launchConfetti(50);
 
-    // Đặt thời gian chờ 1.5 giây (hoặc 2000 cho 2 giây)
+    // Đặt thời gian chờ 1.5 giây
     setTimeout(() => {
         canResume = true; // Mở khóa
-        instruction.style.opacity = "1"; // Hiện dòng chữ hướng dẫn lên
+        if(instruction) instruction.style.opacity = "1";
     }, 1500); 
 }
 
@@ -230,18 +234,14 @@ function celebrate() {
     isGameRunning = false;
     cancelAnimationFrame(gameLoop);
     bgMusic.pause();
-    // Ẩn container chính
     document.getElementById("container").style.display = "none";
-    // Hiện màn hình chúc mừng
     document.getElementById("celebration").style.display = "flex";
-    
     launchConfetti(200);
     createBalloons();
     bgMusic.currentTime = 0; bgMusic.volume = 0.8;
     setTimeout(() => { bgMusic.play(); }, 1000);
 }
 
-// Helper functions
 function toggleMusic() {
     const btn = document.getElementById("toggleMusicBtn");
     if (bgMusic.paused) { bgMusic.play(); btn.textContent = "🎵 Tắt nhạc"; }
@@ -259,7 +259,6 @@ function hideTutorial() {
         isPausedForWish = false; bird.velocity = bird.lift / 2; gameLoop = requestAnimationFrame(animate);
     }
 }
-// Hàm hiệu ứng giữ nguyên
 function launchConfetti(amount) {
     const colors = ["#f06292", "#ba68c8", "#4dd0e1", "#81c784", "#ffd54f"];
     for (let i = 0; i < amount; i++) {
@@ -292,4 +291,12 @@ function createBalloons() {
       document.body.appendChild(balloon);
     }
 }
+
+// --- LẮNG NGHE SỰ KIỆN TOÀN CỬA SỔ (WINDOW) ---
+// Đây là chìa khóa để fix lỗi trên mobile: 
+// Dù chạm vào popup hay canvas thì window đều bắt được sự kiện.
+window.addEventListener("keydown", handleInput);
+window.addEventListener("mousedown", handleInput);
+window.addEventListener("touchstart", handleInput, {passive: false});
+
 window.onload = init;
