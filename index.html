@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Happy Birthday Hân 🎂</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <audio id="eatSound" src="eat.mp3" preload="auto"></audio>
+  <audio id="bgMusic" src="bg-music.mp3" loop preload="auto"></audio>
+
+  <div id="container">
+    <h1>🎉 Chúc Mừng Sinh Nhật Hân 🎉</h1>
+    <h2>Flappy Bird Birthday Edition 🧚‍♀️</h2>
+    
+    <canvas id="gameCanvas" width="400" height="500"></canvas>
+    
+    <h3 id="scoreDisplay">Điểm: 0</h3>
+
+    <div id="buttons">
+      <button id="startBtn">▶️ Bắt đầu</button>
+      <button id="toggleMusicBtn" onclick="toggleMusic()">🎵 Tắt nhạc</button>
+      <button id="restartBtn" style="display: none;">🔁 Chơi Lại</button>
+      <button id="tutorialBtn" onclick="showTutorial()">❓ Hướng dẫn</button>
+    </div>
+  </div>
+  
+<div id="wishPopup" class="wish-popup">
+  <div class="wish-popup-content">
+    <p id="wishPopupText" style="font-size: 1.4rem; font-weight: bold; color: #c2185b; margin-bottom: 30px;"></p>
+    
+    <p id="continueInstruction" style="opacity: 0; transition: opacity 0.5s; color: #666; font-style: italic;">
+        (Nhấn phím Cách hoặc chạm màn hình để tiếp tục)
+    </p>
+  </div>
+</div>
+  
+  <div id="celebration">
+    <img src="han.jpg" alt="Chúc mừng Hân" />
+    <h2>🎈🎉 Chúc Hân tuổi mới rực rỡ! 🎉🎈</h2>
+    <p>Thành công - Xinh đẹp - Hạnh phúc</p>
+    <button onclick="restartGame()" id="celebrationRestartBtn">Chơi lại từ đầu</button>
+  </div>
+  
+  <div id="tutorialPopup" class="tutorial-popup">
+    <div class="tutorial-popup-content">
+      <h3>📖 Cách chơi:</h3>
+      <p>🧚‍♀️ Nhấn phím <b>Cách (Space)</b> hoặc <b>Click chuột vào khung game</b> để bay lên.</p>
+      <p>🚧 Đừng để chạm vào ống nước hoặc rơi xuống đất.</p>
+      <p>🎁 Cứ <b>3 điểm</b>, bạn sẽ nhận được một lời chúc bí mật!</p>
+      <button onclick="hideTutorial()">Đã hiểu</button>
+    </div>
+  </div>
+
+  <script src="game.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+/* Basic resets and body centering */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  justify-content: center;  /* Căn giữa ngang */
+  align-items: center;      /* Căn giữa dọc */
+  min-height: 100vh;        /* Chiều cao full màn hình */
+  flex-direction: column;
+  text-align: center;
+  background: url('bg.webp') no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Container chính - cái khung chứa game */
+#container {
+  width: 95%;
+  max-width: 450px; /* Giới hạn chiều rộng tối đa */
+  margin: 20px auto;
+  background-color: rgba(255, 255, 255, 0.9); /* Nền trắng mờ */
+  padding: 25px;
+  border-radius: 25px;
+  box-shadow: 0 15px 35px rgba(233, 30, 99, 0.4); /* Đổ bóng màu hồng */
+  border: 3px solid #f8bbd0;
+}
+
+h1 { margin: 10px 0; color: #c2185b; }
+h2 { margin-top: 0; color: #e91e63; font-size: 1.2rem; margin-bottom: 20px;}
+#scoreDisplay { color: #c2185b; margin: 15px 0; font-size: 1.5rem;}
+
+/* Style cho canvas - khung game */
+#gameCanvas {
+  border: 4px solid #e91e63;
+  background: #81d4fa; /* Màu trời xanh */
+  display: block;
+  margin: 0 auto; /* Căn giữa trong container */
+  border-radius: 15px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+  max-width: 100%; /* Đảm bảo không bị tràn trên màn hình nhỏ */
+  height: auto;
+}
+
+/* Container cho các nút */
+#buttons {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Style chung cho các nút */
+button {
+  padding: 10px 20px;
+  font-size: 15px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+button:hover { transform: translateY(-2px); box-shadow: 0 6px 10px rgba(0,0,0,0.2); }
+button:active { transform: translateY(1px); }
+
+/* Màu sắc từng nút */
+#startBtn, #restartBtn, #celebrationRestartBtn {
+  background-color: #e91e63; color: white; padding: 12px 24px; font-size: 16px;
+}
+#toggleMusicBtn { background-color: #4caf50; color: white; }
+#tutorialBtn { background-color: #29b6f6; color: white; }
+
+
+/* --- Các phần Popup và Hiệu ứng (Giữ nguyên) --- */
+.wish-popup, .tutorial-popup, #celebration {
+  display: none;
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  justify-content: center; align-items: center;
+  z-index: 1000;
+}
+
+.wish-popup-content, .tutorial-popup-content, #celebration {
+  background: #fff; padding: 30px; border-radius: 25px;
+  max-width: 85%; width: 400px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(233, 30, 99, 0.5);
+  border: 4px solid #f8bbd0;
+}
+#celebration { flex-direction: column; } /* Để căn giữa nội dung chiến thắng */
+
+.wish-popup-content p, .tutorial-popup-content p {
+  font-size: 1.3rem; margin-bottom: 20px; color: #880e4f;
+}
+.continue-text { font-size: 1rem !important; color: #666 !important; font-style: italic; }
+
+#celebration img {
+  width: 180px; height: 180px; object-fit: cover;
+  border-radius: 50%; margin-bottom: 15px;
+  box-shadow: 0 0 25px rgba(255, 105, 180, 0.7);
+  animation: pulse 2s infinite; border: 5px solid #fce4ec;
+}
+
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); }}
+.confetti-piece { position: fixed; z-index: 999; }
+@keyframes confetti { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(600px) rotate(360deg); opacity: 0; }}
+.balloon { position: fixed; bottom: -100px; width: 40px; height: 50px; background-color: red; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; animation: floatUp linear forwards; z-index: 100; }
+.balloon-string { position: absolute; width: 1px; height: 50px; background-color: #999; top: 50px; left: 50%; }
+@keyframes floatUp { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-800px) rotate(5deg); opacity: 0; }}
